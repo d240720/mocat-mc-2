@@ -44,7 +44,7 @@ function cfgMC = setup_MCconfig(rngseed,ICfile)
 
     % SET PROPAGATION TIMES
     t0_prop = 0;                                    % initial PROPAGATION time [min]
-    nyears = 100;                                     % length of PROPAGATION [years]
+    nyears = 1;                                     % length of PROPAGATION [years]
     tf_prop = cfgMC.YEAR2MIN * nyears;              % length of PROPAGATION [min]
     cfgMC.dt_days = 5;                              % CUBE METHOD and PROPAGATION sampling time [days]
     DeltaT = cfgMC.dt_days*cfgMC.DAY2MIN;           % CUBE METHOD and PROPAGATION sampling time [min]
