@@ -175,6 +175,9 @@ function [nS,nD,nN,nB,mat_sats]=main_mc(MCconfig,RNGseed)
 
     %---------------------------------------------------------------------
     %START PROPAGATION
+
+    total_launch_per_year = 0;       % unused for matsat/no_launch models
+    launch_increase_per_year = 0;    % unused for matsat/no_launch models
     for n = 2:n_time
         current_time = time0+days(tsince(n)/DAY2MIN);
         jd = juliandate(current_time);
@@ -193,7 +196,7 @@ function [nS,nD,nN,nB,mat_sats]=main_mc(MCconfig,RNGseed)
             curLaunchT = mod(days(current_time - time0),repDaysRng);  % can be fractional, including days()
 %            [ repeatLaunches(:,idx_launch_date) - repLauncht0  ] and [curLaunchT]  WILL be between 0 and YEAR2DAY
             repLaunchT = repeatLaunches(:,idx_launch_date) - repLauncht0;
-            if curLaunchT + dt_days > YEAR2DAY   % figure out wrap-around issue
+            if curLaunchT + dt_days > repDaysRng  % fixed
                 launchInd = ( (repLaunchT  >= curLaunchT) & (repLaunchT  < YEAR2DAY) ) ...
                     | (repLaunchT < mod(curLaunchT + dt_days, YEAR2DAY)) ;
             else

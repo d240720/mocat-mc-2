@@ -1,13 +1,15 @@
 clc; clear;
-
 addpath(genpath('/Users/dchen/Documents/GitHub/mocat-mc-2'))
+addpath(genpath('/Users/dchen/Documents/GitHub/mocat-mc-2/Examples/Quick_Start'));
 addpath(genpath('/Users/dchen/Documents/GitHub/MOCAT-SSEM'));
-
+warning('off', 'all');
 ICfile = '2020.mat';
-seed = 1;
+seed = 2;
 
 %% Run single MC simulation
 cfg = setup_MCconfig(seed, ICfile);
+fprintf('launchRepeatYrs: %i %i\n', cfg.launchRepeatYrs(1), cfg.launchRepeatYrs(2));
+fprintf('launchRepeatSmooth: %i\n', cfg.launchRepeatSmooth);
 [nS, nD, nN, nB, mat_sats] = main_mc(cfg, seed);
 
 %% Load output data

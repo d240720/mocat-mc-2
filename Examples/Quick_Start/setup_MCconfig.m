@@ -44,7 +44,7 @@ function cfgMC = setup_MCconfig(rngseed,ICfile)
 
     % SET PROPAGATION TIMES
     t0_prop = 0;                                    % initial PROPAGATION time [min]
-    nyears = 1;                                     % length of PROPAGATION [years]
+    nyears = 100;                                     % length of PROPAGATION [years]
     tf_prop = cfgMC.YEAR2MIN * nyears;              % length of PROPAGATION [min]
     cfgMC.dt_days = 5;                              % CUBE METHOD and PROPAGATION sampling time [days]
     DeltaT = cfgMC.dt_days*cfgMC.DAY2MIN;           % CUBE METHOD and PROPAGATION sampling time [min]
@@ -53,11 +53,11 @@ function cfgMC = setup_MCconfig(rngseed,ICfile)
     
     % LAUNCHES
     Simulation = 'TLE';                     % 'TLE'
-    launch_model = 'no_launch';             % random, matsat, no_launch, data, Somma      
+    launch_model = 'matsat';             % random, matsat, no_launch, data, Somma      
     % 0: random launch via poisson distribution (see initSim below)
     % 1: repeat launches between years X and Y (ESA style launch)
     
-    cfgMC.launchRepeatYrs = [2018,2022];    % Min/max year of obj to repeatedly launch (inclusive)
+    cfgMC.launchRepeatYrs = [2010, 2015];    % Min/max year of obj to repeatedly launch (inclusive)
                                             % Only used if TLElaunchRepeat == 1
     cfgMC.launchRepeatSmooth = 0;           % [0/1] average out the above so yearly launch rate remains the same
 
@@ -66,7 +66,24 @@ function cfgMC = setup_MCconfig(rngseed,ICfile)
     
     %-----------------------
     % Initialize INITIAL CONDITION POPULATION and LAUNCHES
-    cfgMC = initSim(cfgMC, Simulation, launch_model, ICfile);   
+   cfgMC = initSim(cfgMC, Simulation, launch_model, ICfile);
+
+    % Override launchRepeatYrs AFTER initSim (initSim overwrites it)
+    cfgMC = initSim(cfgMC, Simulation, launch_model, ICfile);
+    cfgMC.launchRepeatYrs = [2018, 2022];
+    n_years = diff(cfgMC.launchRepeatYrs) + 1;  % = 5
+    cfgMC.repeatLaunches = build_custom_launches(cfgMC, ...
+        'pool_size', 1000*n_years, ...   % = 200 launches/yr over 5-year window
+        'alt_bins',    [400, 550, 700, 1200], ...
+        'alt_weights', [0.15, 0.35, 0.25, 0.25], ...
+        'mass_mean',   150, ...
+        'mass_std',    50, ...
+        'pmd_compliance', 0.95, ...
+        'missionlife', cfgMC.missionlifetime);
+
+    % Fix controlled and mission life
+    cfgMC.repeatLaunches(:, 11) = 1;
+    cfgMC.repeatLaunches(:, 13) = cfgMC.missionlifetime;
     %-----------------------
     % Initialize SHELL information specified by paramSSEM
     paramSSEM.N_shell = 36;

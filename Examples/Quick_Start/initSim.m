@@ -59,6 +59,7 @@ function cfgMCout = initSim(cfg, Simulation, launch_model, ICfile)
     mat_sats(ind_derelicts, idx_controlled) = 0;    % set controlled flag off for derelicts
 
     % Set launch_model
+    repeatLaunches = [];
     switch launch_model
         case {'no_launch','no'} % no launch
             repeatLaunches = []; % empty launches
